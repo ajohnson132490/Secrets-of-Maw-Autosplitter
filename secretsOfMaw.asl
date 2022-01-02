@@ -4,9 +4,6 @@ state("LittleNightmares", "steam")
 	float yCoord : 0x33F9470, 0x30, 0x3C0, 0x160, 0x140;
 	float zCoord : 0x33F9470, 0x30, 0x3C0, 0x160, 0x148;
 
-	//Currently Unused
-	int firstStatue : 0x000004B0, 0x298, 0xFC8, 0xDA8, 0x50, 0x0, 0x910;
-
 	int ominousLight : 0x34104F8, 0x7A8, 0x8, 0x118, 0x160, 0xDC;
 	int ominousLightRat : 0x34104F8, 0x7A8, 0x8, 0x118, 0xD8, 0xDC;
 
@@ -19,9 +16,6 @@ state("LittleNightmares", "gog")
 	float xCoord : 0x33FA480, 0x30, 0x3C0, 0x160, 0x144;
 	float yCoord : 0x33FA480, 0x30, 0x3C0, 0x160, 0x140;
 	float zCoord : 0x33FA480, 0x30, 0x3C0, 0x160, 0x148;
-
-	//Currently Unused
-	int firstStatue : 0x000014C0, 0x298, 0xFC8, 0xDA8, 0x50, 0x0, 0x910;
 
 	int ominousLight : 0x3411508, 0x7A8, 0x8, 0x118, 0x160, 0xDC;
 	int ominousLightRat : 0x3411508, 0x7A8, 0x8, 0x118, 0xD8, 0xDC;
@@ -41,9 +35,9 @@ vars.runStarted = false; // Hack to make sure real time stays consistent with cu
 
 update
 {
-if (current.zCoord < 4000 && current.levelID == 7 && current.levelTime > 0 && old.levelTime < 0.05 && !vars.runStarted) { vars.AllGameTime = 0; vars.runStarted = true; } // Hack to make sure real time stays consistent with current rules
-
-print("First Statue: " + current.firstStatue);
+if (current.zCoord < 4000 && current.levelID == 7 && current.levelTime > 0 && old.levelTime < 0.05 && !vars.runStarted) {
+	 vars.AllGameTime = 0; vars.runStarted = true;
+ } // Hack to make sure real time stays consistent with current rules
 }
 
 startup
@@ -54,7 +48,6 @@ settings.Add("split2", true, "Split at Ladder");
 settings.Add("split3", true, "Split at Boiler Room");
 settings.Add("split4", true, "Split at Elevator");
 settings.Add("split5", true, "Split at Cart Smash");
-settings.Add("split6", false, "Split at First Statue");
 settings.Add("split7", true, "Split at Eye Puzzle Door ");
 settings.Add("split8", true, "Split at Piano Room");
 }
@@ -81,49 +74,42 @@ split
 		return true;
 	}
 		//Split at first ladder [DEPTHS]
-		else if (current.levelID == 7 && vars.splits[1] == true && settings["split2"] && vars.splits[2] != true && current.zCoord > -6330
+		else if (current.levelID == 7 && vars.splits[1] && settings["split2"] && vars.splits[2] != true && current.zCoord > -6330
 		&& current.xCoord > 13300) {
 			vars.splits[2] = true;
 			return true;
 		}
 
 		//Split when you enter the boiler room [HIDEAWAY]
-		else if (current.levelID == 8  && vars.splits[2] == true && settings["split3"] && vars.splits[3] != true
+		else if (current.levelID == 8  && vars.splits[2] && settings["split3"] && vars.splits[3] != true
 		&& current.xCoord > -2375.0	&& current.zCoord > 110) {
 			vars.splits[3] = true;
 			return true;
 		}
 
 		//Split when Elevator goes down [HIDEAWAY]
-		else if (current.levelID == 8  && vars.splits[3] == true && settings["split4"] && vars.splits[4] != true && current.yCoord < 780
-		 && old.zCoord > current.zCoord && current.zCoord < 765 && current.zCoord > 600) {
+		else if (current.levelID == 8 && vars.splits[3] && settings["split4"] && vars.splits[4] != true && current.yCoord > 610
+		 && old.zCoord > current.zCoord && current.zCoord < 765 && current.zCoord > 600 && current.xCoord > 4160 && current.xCoord < 4425) {
 			vars.splits[4] = true;
 			return true;
 		}
 
 		//Split at Cart Smash [HIDEAWAY]
-		else if (current.levelID == 8 && vars.splits[4] == true && settings["split5"] && vars.splits[5] != true && old.xCoord < current.xCoord
-		&& current.xCoord > -4345 && current.zCoord > 970) {
+		else if (current.levelID == 8 && vars.splits[4] && settings["split5"] && vars.splits[5] != true && old.xCoord < current.xCoord
+		&& current.xCoord > -4345 && old.xCoord < -4345 && current.zCoord > 970 && current.zCoord < 1000) {
 			vars.splits[5] = true;
 			return true;
 		}
 
-
-		/*
-		//Split at first Statue [RESIDENCE]
-		if (current.firstStatue > old.firstStatue) {
-		return true;
-	}
-	*/
-
 		//Split at the Eye Puzzle door [RESIDENCE]
-		else if (current.levelID == 9 && vars.splits[5] == true && settings["split7"] && vars.splits[7] != true && current.xCoord > 882 && current.zCoord > 1660) {
+		else if (current.levelID == 9 && vars.splits[5] && settings["split7"] && vars.splits[7] != true
+		&& current.xCoord > 882 && current.xCoord < 1000 && current.yCoord > 1600 && current.zCoord > 1660) {
 			vars.splits[7] = true;
 			return true;
 		}
 
-		//Split at Piano Room
-		else if (current.levelID == 9 && vars.splits[7] && settings["split8"] && vars.splits[8] != true && current.xCoord > -4500
+		//Split at Piano Room [RESIDENCE]
+		else if (current.levelID == 9 && vars.splits[7] && settings["split8"] && vars.splits[8] != true && current.xCoord > -4500 && current.xCoord < -4000
 		&& current.zCoord > 919 && current.zCoord < 1000) {
 			vars.splits[8] = true;
 			return true;
@@ -131,7 +117,7 @@ split
 
 
 	//Split at Level changes
-	return (current.levelID > old.levelID && settings["split0"]);
+	return (current.levelID > old.levelID && settings["split0"] || (current.levelID == 9 && old.xCoord != 11375 && current.xCoord == 11375 && current.zCoord < -2800));
 }
 
 reset
